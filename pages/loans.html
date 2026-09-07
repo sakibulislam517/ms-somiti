@@ -1,0 +1,120 @@
+<div class="mb-8">
+    <h2 class="text-2xl font-bold text-gray-800">Loan Management</h2>
+    <p class="text-gray-500">13 active loan accounts with payment tracking</p>
+</div>
+
+<!-- Summary Cards -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white rounded-xl shadow-sm p-4">
+        <p class="text-sm text-gray-500">Total Loans</p>
+        <p class="text-2xl font-bold text-gray-800">13</p>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm p-4">
+        <p class="text-sm text-gray-500">Total Loan Amount</p>
+        <p class="text-2xl font-bold text-orange-600">৳2,20,000</p>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm p-4">
+        <p class="text-sm text-gray-500">Total Paid</p>
+        <p class="text-2xl font-bold text-green-600">৳1,17,000</p>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm p-4">
+        <p class="text-sm text-gray-500">Outstanding</p>
+        <p class="text-2xl font-bold text-red-600">৳1,03,000</p>
+    </div>
+</div>
+
+<!-- Loan Filter -->
+<div class="bg-white rounded-xl shadow-sm p-4 mb-6">
+    <div class="flex flex-wrap items-center gap-4">
+        <div>
+            <label class="text-sm text-gray-500 block mb-1">Filter by Status</label>
+            <select id="loanFilter" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                <option value="all">All Loans</option>
+                <option value="active">Active (Unpaid)</option>
+                <option value="paid">Paid</option>
+            </select>
+        </div>
+        <div class="ml-auto">
+            <input type="text" id="loanSearch" placeholder="Search borrower..." class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+        </div>
+    </div>
+</div>
+
+<!-- Loan Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="loanCards">
+    <!-- Loan cards will be populated by jQuery -->
+</div>
+
+<script>
+$(document).ready(function() {
+    const loans = [
+        {id:"Loan-01", borrower:"Abdullah Ibne Kabir Fahim", date:"15/03/2026", amount:10000, paid:10000, status:"paid", payments:[{date:"05/12/2026", amount:10000, ref:"-"}]},
+        {id:"Loan-02", borrower:"Johir Raihan", date:"15/03/2026", amount:15000, paid:15000, status:"paid", payments:[{date:"05/12/2026", amount:15000, ref:"-"}]},
+        {id:"Loan-03", borrower:"Ariful Islam Riad", date:"04/02/2026", amount:30000, paid:30000, status:"paid", payments:[{date:"04/06/2026", amount:10000, ref:"Payment-1"},{date:"16/05/2026", amount:10000, ref:"Payment-2"},{date:"22/05/2026", amount:10000, ref:"Payment-3"}]},
+        {id:"Loan-04", borrower:"Johir Jafory", date:"04/04/2026", amount:20000, paid:0, status:"active", payments:[]},
+        {id:"Loan-05", borrower:"Johir Raihan", date:"04/08/2026", amount:10000, paid:10000, status:"paid", payments:[{date:"28/04/2026", amount:10000, ref:"3426042800006912"}]},
+        {id:"Loan-06", borrower:"Abdullah Ibne Kabir Fahim", date:"21/04/2026", amount:20000, paid:20000, status:"paid", payments:[{date:"02/06/2026", amount:20000, ref:"3426060200100351"}]},
+        {id:"Loan-07", borrower:"Md. Sajid Mahmud", date:"22/05/2026", amount:30000, paid:12000, status:"active", payments:[{date:"10/08/2026", amount:12000, ref:"Cash (Reciept No: 28)"}]},
+        {id:"Loan-08", borrower:"Abdur Rahim", date:"22/05/2026", amount:15000, paid:15000, status:"paid", payments:[{date:"27/06/2026", amount:15000, ref:"Cash"}]},
+        {id:"Loan-09", borrower:"Ariful Islam Riad", date:"22/05/2026", amount:20000, paid:20000, status:"paid", payments:[{date:"08/06/2026", amount:20000, ref:"Cash (Reciept No: 25)"}]},
+        {id:"Loan-10", borrower:"MD Faysal Ahmed", date:"22/05/2026", amount:20000, paid:0, status:"active", payments:[]},
+        {id:"Loan-11", borrower:"Abdullah Ibne Kabir Fahim", date:"14/06/2026", amount:50000, paid:0, status:"active", payments:[]},
+        {id:"Loan-12", borrower:"Sharif Mahmud", date:"30/07/2026", amount:15000, paid:0, status:"active", payments:[]},
+        {id:"Loan-13", borrower:"MD Neyamot Ullah", date:"19/08/2026", amount:7000, paid:0, status:"active", payments:[]}
+    ];
+
+    function renderLoans(filter = 'all', search = '') {
+        let html = '';
+        loans.forEach(function(loan) {
+            if (filter === 'active' && loan.status !== 'active') return;
+            if (filter === 'paid' && loan.status !== 'paid') return;
+            if (search && !loan.borrower.toLowerCase().includes(search.toLowerCase()) && !loan.id.toLowerCase().includes(search.toLowerCase())) return;
+
+            const progress = loan.amount > 0 ? Math.round((loan.paid / loan.amount) * 100) : 0;
+            const statusClass = loan.status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700';
+            const statusText = loan.status === 'paid' ? 'Paid' : 'Active';
+
+            html += `<div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                <div class="p-4 border-b">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-bold text-gray-800">${loan.id}</span>
+                        <span class="px-2 py-1 rounded-full text-xs ${statusClass}">${statusText}</span>
+                    </div>
+                    <p class="text-sm text-gray-600">${loan.borrower}</p>
+                    <p class="text-xs text-gray-400">Date: ${loan.date}</p>
+                </div>
+                <div class="p-4">
+                    <div class="flex justify-between text-sm mb-2">
+                        <span class="text-gray-500">Amount</span>
+                        <span class="font-medium">৳${loan.amount.toLocaleString()}</span>
+                    </div>
+                    <div class="flex justify-between text-sm mb-2">
+                        <span class="text-gray-500">Paid</span>
+                        <span class="font-medium text-green-600">৳${loan.paid.toLocaleString()}</span>
+                    </div>
+                    <div class="flex justify-between text-sm mb-3">
+                        <span class="text-gray-500">Due</span>
+                        <span class="font-medium text-orange-600">৳${(loan.amount - loan.paid).toLocaleString()}</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-green-500 h-2 rounded-full" style="width: ${progress}%"></div>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-1 text-right">${progress}% paid</p>
+                </div>
+            </div>`;
+        });
+        $('#loanCards').html(html);
+    }
+
+    $('#loanFilter').change(function() {
+        renderLoans($(this).val(), $('#loanSearch').val());
+    });
+
+    $('#loanSearch').on('input', function() {
+        renderLoans($('#loanFilter').val(), $(this).val());
+    });
+
+    // Initial render
+    renderLoans();
+});
+</script>

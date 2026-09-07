@@ -1,0 +1,229 @@
+<div class="mb-8">
+    <h2 class="text-2xl font-bold text-gray-800">Payment Details</h2>
+    <p class="text-gray-500">Monthly installment payments by partners</p>
+</div>
+
+<!-- Month Filter -->
+<div class="bg-white rounded-xl shadow-sm p-4 mb-6">
+    <div class="flex flex-wrap items-center gap-4">
+        <div>
+            <label class="text-sm text-gray-500 block mb-1">Select Month</label>
+            <select id="monthFilter" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option value="sep">September 2026</option>
+                <option value="aug">August 2026</option>
+                <option value="jul">July 2026</option>
+                <option value="jun">June 2026</option>
+                <option value="may">May 2026</option>
+                <option value="apr">April 2026</option>
+                <option value="mar">March 2026</option>
+                <option value="feb">February 2026</option>
+            </select>
+        </div>
+        <div>
+            <label class="text-sm text-gray-500 block mb-1">Status Filter</label>
+            <select id="statusFilter" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option value="all">All Status</option>
+                <option value="on-time">On-time</option>
+                <option value="accrued">Accrued</option>
+                <option value="advance">Advance</option>
+                <option value="due">Due</option>
+            </select>
+        </div>
+        <div class="ml-auto">
+            <label class="text-sm text-gray-500 block mb-1">Total Collection</label>
+            <p id="monthTotal" class="text-2xl font-bold text-green-600">৳2,30,000</p>
+        </div>
+    </div>
+</div>
+
+<!-- Payment Summary Cards -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white rounded-xl shadow-sm p-4">
+        <div class="flex items-center">
+            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                <i class="fas fa-check text-green-600"></i>
+            </div>
+            <div>
+                <p class="text-sm text-gray-500">On-time</p>
+                <p class="text-xl font-bold text-green-600" id="onTimeCount">22</p>
+            </div>
+        </div>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm p-4">
+        <div class="flex items-center">
+            <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center mr-3">
+                <i class="fas fa-clock text-red-600"></i>
+            </div>
+            <div>
+                <p class="text-sm text-gray-500">Accrued</p>
+                <p class="text-xl font-bold text-red-600" id="accruedCount">8</p>
+            </div>
+        </div>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm p-4">
+        <div class="flex items-center">
+            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                <i class="fas fa-arrow-up text-blue-600"></i>
+            </div>
+            <div>
+                <p class="text-sm text-gray-500">Advance</p>
+                <p class="text-xl font-bold text-blue-600" id="advanceCount">1</p>
+            </div>
+        </div>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm p-4">
+        <div class="flex items-center">
+            <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center mr-3">
+                <i class="fas fa-minus text-gray-600"></i>
+            </div>
+            <div>
+                <p class="text-sm text-gray-500">Not Paid</p>
+                <p class="text-xl font-bold text-gray-600" id="notPaidCount">5</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Payment Table -->
+<div class="bg-white rounded-xl shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm data-table">
+            <thead>
+                <tr class="border-b">
+                    <th class="text-left py-4 px-4 font-semibold text-gray-600">ID</th>
+                    <th class="text-left py-4 px-4 font-semibold text-gray-600">Name</th>
+                    <th class="text-right py-4 px-4 font-semibold text-gray-600">Payment</th>
+                    <th class="text-center py-4 px-4 font-semibold text-gray-600">Status</th>
+                    <th class="text-left py-4 px-4 font-semibold text-gray-600">Date</th>
+                    <th class="text-left py-4 px-4 font-semibold text-gray-600">Reference</th>
+                </tr>
+            </thead>
+            <tbody id="paymentTableBody">
+                <!-- Data populated by jQuery -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    const paymentData = {
+        sep: [
+            {id:"QIA_01202635", name:"MD Neyamot Ullah", amount:5000, status:"accrued", date:"01/09/2026", ref:"9626090100145479"}
+        ],
+        aug: [
+            {id:"QIA_01202601", name:"Mohammad Jonaid", amount:5000, status:"on-time", date:"05/08/2026", ref:"9626080500015261"},
+            {id:"QIA_01202602", name:"Mohammad Jonaid", amount:5000, status:"on-time", date:"05/08/2026", ref:"9626080500015261"},
+            {id:"QIA_01202603", name:"Mohammad Jonaid", amount:5000, status:"on-time", date:"05/08/2026", ref:"9626080500015261"},
+            {id:"QIA_01202604", name:"Abdullah Ibne Kabir Fahim", amount:5000, status:"on-time", date:"03/08/2026", ref:"9626080300010003"},
+            {id:"QIA_01202605", name:"Abdullah Ibne Kabir Fahim", amount:5000, status:"on-time", date:"03/08/2026", ref:"9626080300010003"},
+            {id:"QIA_01202606", name:"Abdur Rahim", amount:5000, status:"on-time", date:"04/08/2026", ref:"9626080400132741"},
+            {id:"QIA_01202607", name:"Abdur Rahim", amount:5000, status:"on-time", date:"04/08/2026", ref:"9626080400132741"},
+            {id:"QIA_01202608", name:"MD Ariful Islam Riad", amount:5000, status:"on-time", date:"03/08/2026", ref:"9626080300113790"},
+            {id:"QIA_01202609", name:"MD Ariful Islam Riad", amount:5000, status:"on-time", date:"03/08/2026", ref:"9626080300113790"},
+            {id:"QIA_01202610", name:"MD Ariful Islam Riad", amount:5000, status:"on-time", date:"03/08/2026", ref:"9626080300113790"},
+            {id:"QIA_01202611", name:"MD Ariful Islam Riad", amount:5000, status:"on-time", date:"03/08/2026", ref:"9626080300113790"},
+            {id:"QIA_01202612", name:"Emdadullah", amount:5000, status:"on-time", date:"05/08/2026", ref:"9626080500027546"},
+            {id:"QIA_01202613", name:"Johir Raihan", amount:5000, status:"on-time", date:"03/08/2026", ref:"9626080300010706"},
+            {id:"QIA_01202614", name:"Johir Raihan", amount:5000, status:"on-time", date:"03/08/2026", ref:"9626080300010706"},
+            {id:"QIA_01202615", name:"Johir Raihan", amount:5000, status:"on-time", date:"03/08/2026", ref:"9626080300010706"},
+            {id:"QIA_01202616", name:"Md. Sajid Mahmud", amount:5000, status:"on-time", date:"08/08/2026", ref:"Cash (Reciept No: 26)"},
+            {id:"QIA_01202617", name:"Md. Sajid Mahmud", amount:5000, status:"on-time", date:"08/08/2026", ref:"Cash (Reciept No: 26)"},
+            {id:"QIA_01202618", name:"Md. Sajid Mahmud", amount:5000, status:"on-time", date:"09/08/2026", ref:"Cash (Reciept No: 27)"},
+            {id:"QIA_01202619", name:"Md. Sajid Mahmud", amount:5000, status:"on-time", date:"09/08/2026", ref:"Cash (Reciept No: 27)"},
+            {id:"QIA_01202620", name:"MD. Faysal Ahmed", amount:null, status:"due", date:"-", ref:"-"},
+            {id:"QIA_01202621", name:"MD. Faysal Ahmed", amount:null, status:"due", date:"-", ref:"-"},
+            {id:"QIA_01202622", name:"MD. Faysal Ahmed", amount:null, status:"due", date:"-", ref:"-"},
+            {id:"QIA_01202623", name:"Johir Jafory", amount:null, status:"due", date:"-", ref:"-"},
+            {id:"QIA_01202624", name:"Johir Jafory", amount:null, status:"due", date:"-", ref:"-"},
+            {id:"QIA_01202625", name:"Johir Jafory", amount:null, status:"due", date:"-", ref:"-"},
+            {id:"QIA_01202626", name:"Md. Jahid Bin Amin", amount:5000, status:"on-time", date:"08/08/2026", ref:"9626080800025884"},
+            {id:"QIA_01202627", name:"Md. Jahid Bin Amin", amount:5000, status:"on-time", date:"08/08/2026", ref:"9626080800025884"},
+            {id:"QIA_01202628", name:"Rakibul Hasan", amount:5000, status:"accrued", date:"20/08/2026", ref:"9626082000124683"},
+            {id:"QIA_01202629", name:"Mamun Hossain", amount:5000, status:"on-time", date:"10/08/2026", ref:"9626081000011889"},
+            {id:"QIA_01202630", name:"Rakibul Hasan", amount:5000, status:"on-time", date:"07/08/2026", ref:"9626080700022213"},
+            {id:"QIA_01202631", name:"Shorif Mahmood", amount:5000, status:"on-time", date:"10/08/2026", ref:"9626081000140588"},
+            {id:"QIA_01202632", name:"Harun Or Rosid", amount:5000, status:"on-time", date:"04/08/2026", ref:"9626080400034524"},
+            {id:"QIA_01202633", name:"Rakibul Hasan", amount:5000, status:"on-time", date:"07/08/2026", ref:"9626080700022213"},
+            {id:"QIA_01202634", name:"Rakibul Hasan", amount:5000, status:"on-time", date:"07/08/2026", ref:"9626080700022213"},
+            {id:"QIA_01202635", name:"MD Neyamot Ullah", amount:5000, status:"accrued", date:"01/09/2026", ref:"9626090100145479"},
+            {id:"QIA_01202636", name:"Minhajur Rahman", amount:5000, status:"on-time", date:"09/08/2026", ref:"S74600343"},
+            {id:"QIA_01202637", name:"Minhajur Rahman", amount:5000, status:"on-time", date:"09/08/2026", ref:"S74600343"},
+            {id:"QIA_01202638", name:"Minhajur Rahman", amount:5000, status:"on-time", date:"09/08/2026", ref:"9626080900063655"},
+            {id:"QIA_01202639", name:"Minhajur Rahman", amount:5000, status:"on-time", date:"09/08/2026", ref:"9626080900063655"},
+            {id:"QIA_01202640", name:"Abdur Rahim", amount:5000, status:"on-time", date:"07/08/2026", ref:"9626080700060534"},
+            {id:"QIA_01202641", name:"Abdur Rahim", amount:5000, status:"on-time", date:"07/08/2026", ref:"9626080700060534"},
+            {id:"QIA_01202642", name:"MD Ariful Islam Riad", amount:5000, status:"on-time", date:"03/08/2026", ref:"9626080300113790"},
+            {id:"QIA_01202643", name:"Johir Jafory", amount:null, status:"due", date:"-", ref:"-"},
+            {id:"QIA_01202644", name:"Abdullah Ibne Kabir Fahim", amount:5000, status:"on-time", date:"03/08/2026", ref:"9626080300010003"},
+            {id:"QIA_01202645", name:"Abdullah Ibne Kabir Fahim", amount:5000, status:"on-time", date:"03/08/2026", ref:"9626080300010003"},
+            {id:"QIA_01202646", name:"Rakibul Hasan", amount:5000, status:"on-time", date:"07/08/2026", ref:"9626080700022213"},
+            {id:"QIA_01202647", name:"Johir Raihan", amount:5000, status:"on-time", date:"04/08/2026", ref:"9626080400135993"},
+            {id:"QIA_01202648", name:"Johir Raihan", amount:5000, status:"on-time", date:"03/08/2026", ref:"9626080300010706"},
+            {id:"QIA_01202649", name:"Johir Raihan", amount:5000, status:"on-time", date:"03/08/2026", ref:"9626080300010706"},
+            {id:"QIA_01202650", name:"Johir Raihan", amount:5000, status:"on-time", date:"04/08/2026", ref:"9626080400135993"},
+            {id:"QIA_01202651", name:"Johir Raihan", amount:5000, status:"on-time", date:"06/08/2026", ref:"9626080600017215"},
+            {id:"QIA_01202652", name:"Johir Raihan", amount:null, status:"due", date:"-", ref:"-"},
+            {id:"QIA_01202653", name:"Atiqure Rahman", amount:5000, status:"on-time", date:"06/08/2026", ref:"9626080600074663"}
+        ]
+    };
+
+    function renderPayments(month) {
+        const data = paymentData[month] || [];
+        let html = '';
+        let total = 0;
+        let onTime = 0, accrued = 0, advance = 0, notPaid = 0;
+
+        data.forEach(function(p) {
+            if (p.amount) total += p.amount;
+            
+            let statusClass = '';
+            let statusText = '';
+            switch(p.status) {
+                case 'on-time':
+                    statusClass = 'bg-green-100 text-green-700';
+                    statusText = 'On-time';
+                    onTime++;
+                    break;
+                case 'accrued':
+                    statusClass = 'bg-red-100 text-red-700';
+                    statusText = 'Accrued';
+                    accrued++;
+                    break;
+                case 'advance':
+                    statusClass = 'bg-blue-100 text-blue-700';
+                    statusText = 'Advance';
+                    advance++;
+                    break;
+                default:
+                    statusClass = 'bg-gray-100 text-gray-700';
+                    statusText = 'Due';
+                    notPaid++;
+            }
+
+            html += `<tr class="border-b hover:bg-gray-50">
+                <td class="py-3 px-4 text-xs text-gray-500">${p.id}</td>
+                <td class="py-3 px-4 font-medium">${p.name}</td>
+                <td class="py-3 px-4 text-right">${p.amount ? '৳' + p.amount.toLocaleString() : '-'}</td>
+                <td class="py-3 px-4 text-center"><span class="px-2 py-1 rounded-full text-xs ${statusClass}">${statusText}</span></td>
+                <td class="py-3 px-4 text-gray-500">${p.date}</td>
+                <td class="py-3 px-4 text-xs text-gray-500">${p.ref}</td>
+            </tr>`;
+        });
+
+        $('#paymentTableBody').html(html);
+        $('#monthTotal').text('৳' + total.toLocaleString('en-IN'));
+        $('#onTimeCount').text(onTime);
+        $('#accruedCount').text(accrued);
+        $('#advanceCount').text(advance);
+        $('#notPaidCount').text(notPaid);
+    }
+
+    $('#monthFilter').change(function() {
+        renderPayments($(this).val());
+    });
+
+    // Initial render
+    renderPayments('aug');
+});
+</script>

@@ -1,0 +1,137 @@
+<style>
+    .investment-page .field:focus { border-color: #3155d9; box-shadow: 0 0 0 3px rgba(49, 85, 217, .12); outline: 0; }
+    .investment-page .modal-scroll { max-height: calc(100vh - 120px); }
+    .investment-page input[type="number"]::-webkit-inner-spin-button { opacity: 1; }
+    .investment-page .label { display: block; margin-bottom: .4rem; color: #475569; font-size: .8rem; font-weight: 600; }
+    .investment-page .input { width: 100%; border: 1px solid #cbd5e1; border-radius: .5rem; padding: .65rem .8rem; font-size: .875rem; color: #1e293b; }
+</style>
+
+<div class="investment-page max-w-7xl mx-auto">
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-5 mb-7">
+        <div><p class="text-xs font-semibold uppercase tracking-widest text-blue-600 mb-2"><i class="fas fa-chart-line mr-1"></i> Portfolio management</p><h2 class="text-3xl font-bold text-slate-900">Investments</h2><p class="text-slate-500 mt-2">Create and track member investments with their sales and installment plans.</p></div>
+        <button id="openInvestmentModal" class="inline-flex items-center justify-center gap-2 rounded-lg bg-slate-900 text-white px-5 py-3 text-sm font-semibold hover:bg-blue-700 transition-colors"><i class="fas fa-plus"></i> Add investment</button>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+        <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm"><p class="text-sm text-slate-500">Active investments</p><p class="text-2xl font-bold text-slate-900 mt-1">53</p><p class="text-xs text-emerald-600 mt-2"><i class="fas fa-arrow-up mr-1"></i> 8 this month</p></div>
+        <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm"><p class="text-sm text-slate-500">Total invested</p><p class="text-2xl font-bold text-blue-600 mt-1">৳11,58,500</p><p class="text-xs text-slate-400 mt-2">Across 6 portfolios</p></div>
+        <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm"><p class="text-sm text-slate-500">Expected profit</p><p class="text-2xl font-bold text-emerald-600 mt-1">৳1,91,255</p><p class="text-xs text-slate-400 mt-2">Current plans</p></div>
+        <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm"><p class="text-sm text-slate-500">Outstanding</p><p class="text-2xl font-bold text-orange-600 mt-1">৳10,24,169</p><p class="text-xs text-slate-400 mt-2">Receivable balance</p></div>
+    </div>
+
+    <section class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+        <div class="p-5 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4"><div><h3 class="text-lg font-bold text-slate-900">Investment list</h3><p class="text-sm text-slate-500 mt-1">Every investment and its linked sales record.</p></div><div class="flex flex-col sm:flex-row gap-3"><select id="statusFilter" class="field rounded-lg border border-slate-300 px-3 py-2 text-sm"><option value="all">All statuses</option><option value="active">Active</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select><input id="investmentSearch" type="search" placeholder="Search member..." class="field rounded-lg border border-slate-300 px-3 py-2 text-sm"></div></div>
+        <div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-slate-50 text-slate-500"><tr><th class="text-left font-semibold px-5 py-3">Investment</th><th class="text-left font-semibold px-5 py-3">Member</th><th class="text-left font-semibold px-5 py-3">Invoice</th><th class="text-right font-semibold px-5 py-3">Invested</th><th class="text-right font-semibold px-5 py-3">Profit</th><th class="text-right font-semibold px-5 py-3">Outstanding</th><th class="text-center font-semibold px-5 py-3">Status</th><th class="text-center font-semibold px-5 py-3">Action</th></tr></thead><tbody id="investmentList"></tbody></table></div>
+    </section>
+</div>
+
+<div id="investmentModal" class="hidden fixed inset-0 z-50 bg-slate-950/50 p-4 sm:p-6 overflow-y-auto">
+    <div class="max-w-5xl mx-auto bg-white rounded-2xl shadow-2xl modal-scroll overflow-y-auto">
+        <div class="sticky top-0 z-10 bg-white border-b border-slate-100 px-5 sm:px-7 py-4 flex items-center justify-between"><div><p class="text-xs font-semibold uppercase tracking-wider text-blue-600">New record</p><h3 class="text-xl font-bold text-slate-900 mt-1">Add investment</h3></div><button id="closeInvestmentModal" class="w-9 h-9 rounded-lg text-slate-500 hover:bg-slate-100" aria-label="Close"><i class="fas fa-xmark text-lg"></i></button></div>
+        <form id="investmentForm" class="p-5 sm:p-7">
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-7">
+                <div class="lg:col-span-3 space-y-6">
+                    <div><div class="flex items-center gap-2 mb-4"><span class="w-7 h-7 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center">1</span><h4 class="font-bold text-slate-900">Invoice information</h4></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><div><label for="invoiceNo" class="label">Invoice no.</label><input id="invoiceNo" value="QIA-INV-07" class="field input"></div><div><label for="issueDate" class="label">Issue date</label><input id="issueDate" type="date" value="2026-09-07" class="field input"></div></div></div>
+                    <div class="border-t border-slate-100 pt-6"><div class="flex items-center gap-2 mb-4"><span class="w-7 h-7 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center">2</span><h4 class="font-bold text-slate-900">Select member</h4></div><div class="grid grid-cols-1 sm:grid-cols-3 gap-4"><div class="sm:col-span-2"><label for="memberName" class="label">Member / investor</label><select id="memberName" class="field input" required><option value="">Loading members...</option></select></div><div><label for="memberPhone" class="label">Phone number</label><input id="memberPhone" placeholder="01XXXXXXXXX" class="field input"></div></div><div class="mt-4"><label for="memberAddress" class="label">Address</label><input id="memberAddress" placeholder="Full address" class="field input"></div></div>
+                    <div class="border-t border-slate-100 pt-6"><div class="flex items-center gap-2 mb-4"><span class="w-7 h-7 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center">3</span><h4 class="font-bold text-slate-900">Sales details</h4></div><div class="grid grid-cols-1 sm:grid-cols-4 gap-4"><div class="sm:col-span-2"><label for="itemDescription" class="label">Item description</label><input id="itemDescription" placeholder="Item name / details" class="field input"></div><div><label for="itemQuantity" class="label">Quantity</label><input id="itemQuantity" type="number" min="1" value="1" class="field input"></div><div><label for="itemUnit" class="label">Unit</label><select id="itemUnit" class="field input"><option>Piece</option><option>Ana</option><option>Gram</option><option>Kg</option></select></div></div><div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4"><div><label for="sellingPrice" class="label">Selling price (৳)</label><input id="sellingPrice" type="number" min="0" value="22000" class="field input"></div><div><label for="costPrice" class="label">Cost price (৳)</label><input id="costPrice" type="number" min="0" value="20000" class="field input"></div><div><label for="grossProfit" class="label">Gross profit (৳)</label><input id="grossProfit" readonly class="input bg-slate-50 text-emerald-600 font-semibold"></div></div></div>
+                    <div class="border-t border-slate-100 pt-6"><div class="flex items-center gap-2 mb-4"><span class="w-7 h-7 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center">4</span><h4 class="font-bold text-slate-900">Investment and payment</h4></div><div class="grid grid-cols-1 sm:grid-cols-3 gap-4"><div><label for="investmentAmount" class="label">Investment amount (৳)</label><input id="investmentAmount" type="number" min="0" value="20000" class="field input font-semibold"></div><div><label for="amountPaid" class="label">Amount paid (৳)</label><input id="amountPaid" type="number" min="0" value="0" class="field input"></div><div><label for="amountDue" class="label">Amount due (৳)</label><input id="amountDue" readonly class="input bg-slate-50 font-semibold"></div></div><div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4"><div><label for="profitRate" class="label">Profit rate (%)</label><input id="profitRate" type="number" min="0" step="0.5" value="10" class="field input font-semibold"></div><div><label for="termMonths" class="label">Installment term</label><input id="termMonths" type="number" min="1" max="60" value="12" class="field input"></div><div><label for="startDate" class="label">First installment</label><input id="startDate" type="date" value="2026-09-15" class="field input"></div></div></div>
+                </div>
+                <aside class="lg:col-span-2"><div class="lg:sticky lg:top-20 rounded-xl bg-slate-900 text-white p-5"><div class="flex items-center justify-between mb-6"><span class="text-sm text-slate-300">Plan preview</span><span class="text-xs bg-white/10 rounded-full px-2 py-1">Draft</span></div><p class="text-xs uppercase tracking-widest text-slate-400">Total payable</p><p id="modalTotal" class="text-4xl font-bold mt-2">৳22,000</p><div class="grid grid-cols-2 gap-3 border-t border-white/10 mt-6 pt-4"><div><p class="text-xs text-slate-400">Profit</p><p id="modalProfit" class="text-lg font-semibold text-emerald-300 mt-1">৳2,000</p></div><div><p class="text-xs text-slate-400">Monthly</p><p id="modalInstallment" class="text-lg font-semibold mt-1">৳1,833.33</p></div></div></div><div class="mt-5 rounded-xl border border-slate-200 overflow-hidden"><div class="p-4 bg-slate-50 border-b border-slate-200 flex justify-between"><span class="font-semibold text-slate-800">Schedule preview</span><span id="modalTermText" class="text-xs text-slate-500">12 months</span></div><div class="max-h-72 overflow-y-auto"><table class="w-full text-xs"><thead class="text-slate-400"><tr><th class="text-left px-4 py-2">#</th><th class="text-left px-4 py-2">Due</th><th class="text-right px-4 py-2">Amount</th></tr></thead><tbody id="modalSchedule"></tbody></table></div></div></aside>
+            </div>
+            <div class="border-t border-slate-100 mt-7 pt-5 flex flex-col-reverse sm:flex-row sm:justify-end gap-3"><button type="button" id="cancelInvestment" class="px-5 py-2.5 rounded-lg border border-slate-300 text-sm font-semibold text-slate-600 hover:bg-slate-50">Cancel</button><button type="submit" class="px-5 py-2.5 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700"><i class="fas fa-check mr-2"></i>Review investment</button></div>
+        </form>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    const records = [
+        { id: 'INV-0006', member: 'MD Ariful Islam Riad', portfolio: 'Sale-6', invested: 167000, profit: 26720, outstanding: 177570, status: 'Active' },
+        { id: 'INV-0005', member: 'Minhajur Rahman', portfolio: 'Sale-5', invested: 250000, profit: 40000, outstanding: 240000, status: 'Active' },
+        { id: 'INV-0004', member: 'Harun Or Rosid', portfolio: 'Sale-3', invested: 200000, profit: 44000, outstanding: 189000, status: 'Active' },
+        { id: 'INV-0003', member: 'Abdur Rahim', portfolio: 'Sale-2', invested: 100000, profit: 21000, outstanding: 80664, status: 'Active' },
+        { id: 'INV-0002', member: 'MD. Faysal Ahmed', portfolio: 'Sale-1', invested: 208000, profit: 52500, outstanding: 210000, status: 'Active' },
+        { id: 'INV-0001', member: 'Mohammad Jonaid', portfolio: 'Sale-1', invested: 5200, profit: 1312.5, outstanding: 4800, status: 'Active' }
+    ];
+    const money = value => '৳' + Number(value || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 });
+    function renderList() { const filter = $('#portfolioFilter').val(); const search = $('#investmentSearch').val().toLowerCase(); const html = records.filter(row => (filter === 'all' || row.portfolio === filter) && row.member.toLowerCase().includes(search)).map(row => `<tr class="border-b border-slate-100 hover:bg-slate-50"><td class="px-5 py-4"><p class="font-semibold text-slate-800">${row.id}</p><p class="text-xs text-slate-400 mt-1">Created today</p></td><td class="px-5 py-4 font-medium text-slate-700">${row.member}</td><td class="px-5 py-4"><span class="px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold">${row.portfolio}</span></td><td class="px-5 py-4 text-right font-semibold">${money(row.invested)}</td><td class="px-5 py-4 text-right text-emerald-600">${money(row.profit)}</td><td class="px-5 py-4 text-right text-orange-600">${money(row.outstanding)}</td><td class="px-5 py-4 text-center"><span class="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold">${row.status}</span></td></tr>`).join(''); $('#investmentList').html(html || '<tr><td colspan="7" class="px-5 py-12 text-center text-slate-500">No investments found.</td></tr>'); }
+    function modalMoney(value) { return '৳' + Number(value || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+    function renderSchedule() { const amount = Math.max(0, parseFloat($('#investmentAmount').val()) || 0); const rate = Math.max(0, parseFloat($('#profitRate').val()) || 0); const term = Math.max(1, Math.min(60, parseInt($('#termMonths').val(), 10) || 1)); const selling = parseFloat($('#sellingPrice').val()) || 0; const cost = parseFloat($('#costPrice').val()) || 0; const paid = parseFloat($('#amountPaid').val()) || 0; const profit = amount * rate / 100; const total = amount + profit; const installment = Math.floor((total / term) * 100) / 100; const start = new Date($('#startDate').val() || '2026-09-15'); $('#grossProfit').val((selling - cost).toFixed(2)); $('#amountDue').val(Math.max(0, selling - paid).toFixed(2)); $('#modalTotal').text(modalMoney(total)); $('#modalProfit').text(modalMoney(profit)); $('#modalInstallment').text(modalMoney(installment)); $('#modalTermText').text(term + (term === 1 ? ' month' : ' months')); let rows = ''; for (let i = 0; i < term; i++) { const due = new Date(start); due.setMonth(start.getMonth() + i); const value = i === term - 1 ? total - installment * (term - 1) : installment; rows += `<tr class="border-b border-slate-100"><td class="px-4 py-2 text-slate-400">${i + 1}</td><td class="px-4 py-2 text-slate-600">${due.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</td><td class="px-4 py-2 text-right font-semibold text-slate-700">${modalMoney(value)}</td></tr>`; } $('#modalSchedule').html(rows); }
+    function openModal() { $('#investmentModal').removeClass('hidden'); $('body').addClass('overflow-hidden'); renderSchedule(); }
+    function closeModal() { $('#investmentModal').addClass('hidden'); $('body').removeClass('overflow-hidden'); }
+    $('#portfolioFilter, #investmentSearch').on('input change', renderList); $('#openInvestmentModal').on('click', openModal); $('#closeInvestmentModal, #cancelInvestment').on('click', closeModal); $('#investmentModal').on('click', function(e) { if (e.target === this) closeModal(); }); $('#sellingPrice, #costPrice, #amountPaid, #investmentAmount, #profitRate, #termMonths, #startDate').on('input change', renderSchedule); $('#investmentForm').on('submit', function(e) { e.preventDefault(); closeModal(); alert('Investment reviewed successfully. Backend saving will be connected next.'); }); renderList();
+});
+</script>
+
+<script>
+$(document).ready(function() {
+    const apiUrl = 'api/investments.php';
+
+    function apiMoney(value) {
+        return '৳' + Number(value || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 });
+    }
+
+    function loadMembers() {
+        $.getJSON(apiUrl + '?action=members', function(response) {
+            if (!response.ok) return;
+            const options = response.data.map(function(member) {
+                return `<option value="${member.id}" data-phone="${member.phone || ''}" data-address="${member.address || ''}">${member.name}</option>`;
+            });
+            $('#memberName').html('<option value="">Select member</option>' + options.join(''));
+        });
+    }
+
+    function loadInvestments() {
+        $.getJSON(apiUrl + '?action=list', function(response) {
+            if (!response.ok) return;
+            const status = $('#statusFilter').val();
+            const search = ($('#investmentSearch').val() || '').toLowerCase();
+            const rows = response.data.filter(function(row) {
+                return (status === 'all' || row.status === status) && row.member_name.toLowerCase().includes(search);
+            }).map(function(row) {
+                const statusClass = row.status === 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600';
+                return `<tr class="border-b border-slate-100 hover:bg-slate-50">
+                    <td class="px-5 py-4"><p class="font-semibold text-slate-800">INV-${String(row.id).padStart(4, '0')}</p><p class="text-xs text-slate-400 mt-1">${row.issue_date}</p></td>
+                    <td class="px-5 py-4 font-medium text-slate-700">${row.member_name}</td>
+                    <td class="px-5 py-4 text-slate-600">${row.invoice_no}</td>
+                    <td class="px-5 py-4 text-right font-semibold">${apiMoney(row.investment_amount)}</td>
+                    <td class="px-5 py-4 text-right text-emerald-600">${apiMoney(row.profit_amount)}</td>
+                    <td class="px-5 py-4 text-right text-orange-600">${apiMoney(row.amount_due)}</td>
+                    <td class="px-5 py-4 text-center"><span class="px-2.5 py-1 rounded-full ${statusClass} text-xs font-semibold">${row.status}</span></td>
+                    <td class="px-5 py-4 text-center"><button type="button" class="delete-investment text-red-500 hover:text-red-700" data-id="${row.id}" title="Delete investment"><i class="fas fa-trash"></i></button></td>
+                </tr>`;
+            }).join('');
+            $('#investmentList').html(rows || '<tr><td colspan="8" class="px-5 py-12 text-center text-slate-500">No investments found.</td></tr>');
+        }).fail(function() {
+            $('#investmentList').html('<tr><td colspan="8" class="px-5 py-12 text-center text-red-500">Could not load investment data.</td></tr>');
+        });
+    }
+
+    $('#statusFilter, #investmentSearch').on('input change', loadInvestments);
+    $('#memberName').on('change', function() {
+        const selected = $(this).find(':selected');
+        $('#memberPhone').val(selected.data('phone') || '');
+        $('#memberAddress').val(selected.data('address') || '');
+    });
+    $(document).on('click', '.delete-investment', function() {
+        const id = $(this).data('id');
+        if (!confirm('Delete this investment and its schedule?')) return;
+        $.post(apiUrl, { action: 'delete', id: id }, function(response) {
+            if (response.ok) loadInvestments();
+            else alert(response.message || 'Delete failed.');
+        }, 'json');
+    });
+    $('#investmentForm').off('submit').on('submit', function(event) {
+        event.preventDefault();
+        const data = { action: 'save' };
+        $(this).serializeArray().forEach(function(field) { data[field.name] = field.value; });
+        data.invoice_no = $('#invoiceNo').val(); data.issue_date = $('#issueDate').val(); data.member_id = $('#memberName').val(); data.member_phone = $('#memberPhone').val(); data.member_address = $('#memberAddress').val(); data.item_description = $('#itemDescription').val(); data.quantity = $('#itemQuantity').val(); data.unit = $('#itemUnit').val(); data.selling_price = $('#sellingPrice').val(); data.cost_price = $('#costPrice').val(); data.amount_paid = $('#amountPaid').val(); data.investment_amount = $('#investmentAmount').val(); data.profit_rate = $('#profitRate').val(); data.term_months = $('#termMonths').val(); data.start_date = $('#startDate').val();
+        $.post(apiUrl, data, function(response) {
+            if (!response.ok) { alert(response.message || 'Investment save failed.'); return; }
+            $('#investmentModal').addClass('hidden'); $('body').removeClass('overflow-hidden'); loadInvestments(); alert(response.message);
+        }, 'json').fail(function(xhr) { alert(xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'Investment save failed.'); });
+    });
+    loadMembers();
+    loadInvestments();
+});
+</script>

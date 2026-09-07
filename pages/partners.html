@@ -1,0 +1,120 @@
+<div class="mb-8 flex items-center justify-between">
+    <div>
+        <h2 class="text-2xl font-bold text-gray-800">Partner List</h2>
+        <p class="text-gray-500">Total 17 partners with 53 shares</p>
+    </div>
+    <div class="flex gap-2">
+        <span class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg text-sm font-medium">
+            <i class="fas fa-users mr-1"></i> 17 Partners
+        </span>
+        <span class="px-4 py-2 bg-green-100 text-green-700 rounded-lg text-sm font-medium">
+            <i class="fas fa-chart-pie mr-1"></i> 53 Shares
+        </span>
+    </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white rounded-xl shadow-sm p-4">
+        <p class="text-sm text-gray-500">Total Deposits</p>
+        <p class="text-2xl font-bold text-gray-800">৳17,45,000</p>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm p-4">
+        <p class="text-sm text-gray-500">Total Due</p>
+        <p class="text-2xl font-bold text-orange-600">৳3,75,000</p>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm p-4">
+        <p class="text-sm text-gray-500">Form Fees</p>
+        <p class="text-2xl font-bold text-gray-800">৳1,500</p>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm p-4">
+        <p class="text-sm text-gray-500">Avg per Share</p>
+        <p class="text-2xl font-bold text-gray-800">৳33,868</p>
+    </div>
+</div>
+
+<!-- Partner Table -->
+<div class="bg-white rounded-xl shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm data-table">
+            <thead>
+                <tr class="border-b">
+                    <th class="text-left py-4 px-4 font-semibold text-gray-600">SL</th>
+                    <th class="text-left py-4 px-4 font-semibold text-gray-600">Name</th>
+                    <th class="text-center py-4 px-4 font-semibold text-gray-600">Shares</th>
+                    <th class="text-right py-4 px-4 font-semibold text-gray-600">Form Fee</th>
+                    <th class="text-right py-4 px-4 font-semibold text-gray-600">Deposit</th>
+                    <th class="text-right py-4 px-4 font-semibold text-gray-600">Due Amount</th>
+                    <th class="text-center py-4 px-4 font-semibold text-gray-600">Progress</th>
+                    <th class="text-left py-4 px-4 font-semibold text-gray-600">Bank Info</th>
+                </tr>
+            </thead>
+            <tbody id="partnerTableBody">
+                <!-- Data will be populated by jQuery -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    const partners = [
+        {sl:1, name:"Abdullah Ibne Kabir Fahim", shares:4, fee:100, deposit:140000, due:20000, bank:"Islami Bank BD PLC"},
+        {sl:2, name:"Md. Sajid Mahmud", shares:4, fee:100, deposit:140000, due:20000, bank:null},
+        {sl:3, name:"Md. Jahid Bin Amin", shares:2, fee:100, deposit:70000, due:10000, bank:"Aftabnagar Sub-Branch"},
+        {sl:4, name:"Ariful Islam Riad", shares:5, fee:100, deposit:175000, due:25000, bank:null},
+        {sl:5, name:"Rakibul Hasan", shares:5, fee:100, deposit:175000, due:25000, bank:"Rajlaxmi Complex, Aftabnagar"},
+        {sl:6, name:"MD Faysal Ahmed", shares:3, fee:100, deposit:75000, due:45000, bank:null},
+        {sl:7, name:"Johir Raihan", shares:9, fee:100, deposit:300000, due:60000, bank:"AC: 20506470200276102"},
+        {sl:8, name:"Johir Jafory", shares:4, fee:100, deposit:70000, due:90000, bank:null},
+        {sl:9, name:"Harun Or Rosid", shares:1, fee:100, deposit:35000, due:5000, bank:null},
+        {sl:10, name:"Abdur Rahim", shares:4, fee:100, deposit:140000, due:20000, bank:null},
+        {sl:11, name:"Sharif Mahmood", shares:1, fee:"Due", deposit:35000, due:5000, bank:null},
+        {sl:12, name:"Mohammad Jonaid", shares:3, fee:100, deposit:105000, due:15000, bank:null},
+        {sl:13, name:"Emdadullah", shares:1, fee:100, deposit:35000, due:5000, bank:null},
+        {sl:14, name:"Mamun Hossain", shares:1, fee:100, deposit:35000, due:5000, bank:null},
+        {sl:15, name:"MD Neyamot Ullah", shares:1, fee:"Due", deposit:40000, due:0, bank:null},
+        {sl:16, name:"Minhajur Rahman", shares:4, fee:100, deposit:140000, due:20000, bank:null},
+        {sl:17, name:"Atiqure Rahman", shares:1, fee:100, deposit:35000, due:5000, bank:null}
+    ];
+
+    let html = '';
+    partners.forEach(function(p) {
+        const total = p.deposit + p.due;
+        const progress = total > 0 ? Math.round((p.deposit / total) * 100) : 0;
+        const progressColor = progress >= 80 ? 'bg-green-500' : progress >= 50 ? 'bg-yellow-500' : 'bg-red-500';
+        
+        html += `<tr class="border-b hover:bg-gray-50">
+            <td class="py-3 px-4">${p.sl}</td>
+            <td class="py-3 px-4 font-medium">${p.name}</td>
+            <td class="py-3 px-4 text-center"><span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs">${p.shares}</span></td>
+            <td class="py-3 px-4 text-right ${p.fee === 'Due' ? 'text-red-500' : ''}">${p.fee}</td>
+            <td class="py-3 px-4 text-right font-medium">${p.deposit.toLocaleString('en-IN')}</td>
+            <td class="py-3 px-4 text-right ${p.due > 0 ? 'text-orange-600 font-medium' : 'text-green-600'}">${p.due.toLocaleString('en-IN')}</td>
+            <td class="py-3 px-4">
+                <div class="flex items-center">
+                    <div class="w-16 bg-gray-200 rounded-full h-2 mr-2">
+                        <div class="${progressColor} h-2 rounded-full" style="width: ${progress}%"></div>
+                    </div>
+                    <span class="text-xs text-gray-500">${progress}%</span>
+                </div>
+            </td>
+            <td class="py-3 px-4 text-xs text-gray-500">${p.bank || '-'}</td>
+        </tr>`;
+    });
+    
+    // Total row
+    html += `<tr class="bg-gray-50 font-bold">
+        <td class="py-3 px-4"></td>
+        <td class="py-3 px-4">Total</td>
+        <td class="py-3 px-4 text-center">53</td>
+        <td class="py-3 px-4 text-right">1,500</td>
+        <td class="py-3 px-4 text-right">17,45,000</td>
+        <td class="py-3 px-4 text-right text-orange-600">3,75,000</td>
+        <td class="py-3 px-4"></td>
+        <td class="py-3 px-4"></td>
+    </tr>`;
+    
+    $('#partnerTableBody').html(html);
+});
+</script>

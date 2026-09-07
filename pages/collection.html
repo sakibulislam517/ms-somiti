@@ -1,0 +1,207 @@
+<div class="mb-8">
+    <h2 class="text-2xl font-bold text-gray-800">Member Collection</h2>
+    <p class="text-gray-500">Record monthly fees and other payments received from members</p>
+</div>
+
+<!-- Summary Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-green-600">
+        <p class="text-sm text-gray-500">Total Collection</p>
+        <p class="text-2xl font-bold text-gray-800" id="totalCollection">৳0</p>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-blue-600">
+        <p class="text-sm text-gray-500">Collection Entries</p>
+        <p class="text-2xl font-bold text-gray-800" id="totalEntries">0</p>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-purple-600">
+        <p class="text-sm text-gray-500">Net Member Balance</p>
+        <p class="text-2xl font-bold text-gray-800" id="netBalance">৳0</p>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+    <!-- Collection Form -->
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden lg:col-span-1">
+        <div class="px-5 py-4 border-b bg-blue-50">
+            <h3 class="font-bold text-gray-800"><i class="fas fa-hand-holding-dollar text-blue-600 mr-2"></i>New Collection</h3>
+        </div>
+        <form id="collectionForm" class="p-5 space-y-4">
+            <input type="hidden" name="action" value="save">
+            <input type="hidden" name="entry_type" value="collection">
+            <div>
+                <label class="block text-sm font-semibold text-gray-600 mb-1">Member</label>
+                <select name="member_id" id="collectMember" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Loading members...</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-semibold text-gray-600 mb-1">Amount (৳)</label>
+                <input type="number" name="amount" id="collectAmount" min="0" step="0.01" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="5000">
+            </div>
+            <div>
+                <label class="block text-sm font-semibold text-gray-600 mb-1">Date</label>
+                <input type="date" name="entry_date" id="collectDate" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+                <label class="block text-sm font-semibold text-gray-600 mb-1">Purpose</label>
+                <input type="text" name="purpose" id="collectPurpose" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Monthly fee">
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-600 mb-1">Method</label>
+                    <select name="method" id="collectMethod" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm">
+                        <option>Cash</option>
+                        <option>Bank</option>
+                        <option>bKash</option>
+                        <option>Nagad</option>
+                        <option>Rocket</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-600 mb-1">Ref. no.</label>
+                    <input type="text" name="reference_no" id="collectRef" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm" placeholder="TrxID">
+                </div>
+            </div>
+            <button type="submit" class="w-full py-3 rounded-lg bg-blue-600 text-white text-sm font-bold hover:bg-blue-700 transition-colors"><i class="fas fa-check mr-2"></i>Save Collection</button>
+        </form>
+    </div>
+
+    <!-- Collection History -->
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden lg:col-span-2">
+        <div class="px-5 py-4 border-b flex items-center justify-between gap-3 flex-wrap">
+            <h3 class="font-bold text-gray-800"><i class="fas fa-clock-rotate-left text-blue-600 mr-2"></i>Collection History</h3>
+            <div class="flex gap-2 flex-wrap">
+                <select id="historyMonth" class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm">
+                    <option value="all">All time</option>
+                </select>
+                <input type="date" id="historyDate" class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm" title="Filter by date">
+            </div>
+        </div>
+        <div class="overflow-x-auto max-h-[520px] overflow-y-auto">
+            <table class="w-full text-sm">
+                <thead class="bg-slate-50 sticky top-0">
+                    <tr>
+                        <th class="text-left py-3 px-4 font-semibold text-gray-600">Date</th>
+                        <th class="text-left py-3 px-4 font-semibold text-gray-600">Member</th>
+                        <th class="text-left py-3 px-4 font-semibold text-gray-600">Purpose</th>
+                        <th class="text-right py-3 px-4 font-semibold text-gray-600">Amount</th>
+                        <th class="text-center py-3 px-4 font-semibold text-gray-600">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="collectionHistoryBody">
+                    <tr><td colspan="5" class="py-10 text-center text-gray-400">Loading collections...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    const money = value => '৳' + Number(value || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 });
+    const ledgerApi = 'api/ledger.php';
+
+    $('#collectDate').val(new Date().toISOString().split('T')[0]);
+    populateMonthFilter();
+
+    function populateMonthFilter() {
+        const select = $('#historyMonth');
+        const now = new Date();
+        for (let i = 0; i < 12; i++) {
+            const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            const value = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+            const label = d.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+            select.append(`<option value="${value}">${label}</option>`);
+        }
+    }
+
+    function loadMembers() {
+        $.getJSON(ledgerApi + '?action=members', function(response) {
+            if (!response.ok) return;
+            const options = response.data.map(m => `<option value="${m.id}">${m.name}</option>`).join('');
+            $('#collectMember').html('<option value="">-- Select Member --</option>' + options);
+        });
+    }
+
+    function loadSummary() {
+        $.getJSON(ledgerApi + '?action=summary', function(response) {
+            if (!response.ok) return;
+            $('#totalCollection').text(money(response.data.total_collection));
+            $('#totalEntries').text(Number(response.data.entries || 0).toLocaleString('en-IN'));
+            $('#netBalance').text(money(response.data.net_balance));
+        });
+    }
+
+    function currentFilter() {
+        const month = $('#historyMonth').val();
+        const date = $('#historyDate').val();
+        const params = [];
+        if (month !== 'all') {
+            params.push('from=' + month + '-01', 'to=' + month + '-31');
+        }
+        if (date) {
+            params.push('from=' + date, 'to=' + date);
+        }
+        return params.join('&');
+    }
+
+    function loadHistory() {
+        const typeFilter = 'type=collection';
+        const extra = currentFilter();
+        $.getJSON(ledgerApi + '?action=list&' + typeFilter + (extra ? '&' + extra : ''), function(response) {
+            if (!response.ok) return;
+            const rows = response.data;
+            let total = 0;
+            let html = rows.map(function(r) {
+                total += r.debit;
+                return `<tr class="border-b hover:bg-gray-50">
+                    <td class="py-3 px-4 text-gray-500">${r.entry_date}</td>
+                    <td class="py-3 px-4 font-medium">${r.member_name}</td>
+                    <td class="py-3 px-4 text-gray-500">${r.purpose || 'Monthly fee'}</td>
+                    <td class="py-3 px-4 text-right font-semibold text-green-600">${money(r.debit)}</td>
+                    <td class="py-3 px-4 text-center">
+                        <button type="button" class="delete-entry text-red-500 hover:text-red-700" data-id="${r.id}" title="Delete"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>`;
+            }).join('');
+            html += `<tr class="bg-gray-50 font-bold">
+                <td colspan="3" class="py-3 px-4 text-right">Total</td>
+                <td class="py-3 px-4 text-right text-green-600">${money(total)}</td>
+                <td></td>
+            </tr>`;
+            $('#collectionHistoryBody').html(html || '<tr><td colspan="5" class="py-10 text-center text-gray-400">No collections recorded.</td></tr>');
+        });
+    }
+
+    $('#historyMonth, #historyDate').on('change', loadHistory);
+
+    $(document).on('click', '.delete-entry', function() {
+        const id = $(this).data('id');
+        if (!confirm('Delete this collection entry? The change will be removed from the ledger too.')) return;
+        $.post(ledgerApi, { action: 'delete', id: id }, function(response) {
+            if (!response.ok) { alert(response.message || 'Delete failed.'); return; }
+            loadHistory();
+            loadSummary();
+        }, 'json');
+    });
+
+    $('#collectionForm').on('submit', function(e) {
+        e.preventDefault();
+        const data = {};
+        $(this).serializeArray().forEach(function(f) { data[f.name] = f.value; });
+        $.post(ledgerApi, data, function(response) {
+            if (!response.ok) { alert(response.message || 'Collection failed.'); return; }
+            $('#collectAmount').val('');
+            $('#collectRef').val('');
+            $('#collectPurpose').val('');
+            loadHistory();
+            loadSummary();
+            alert(response.message);
+        }, 'json');
+    });
+
+    loadMembers();
+    loadSummary();
+    loadHistory();
+});
+</script>

@@ -1,0 +1,299 @@
+<div class="mb-8 flex flex-wrap items-center justify-between gap-4">
+    <div>
+        <h2 class="text-2xl font-bold text-gray-800">Investor Ledger</h2>
+        <p class="text-gray-500">Every money movement of every member — collection, investment, withdrawal, payment</p>
+    </div>
+    <div class="flex gap-2">
+        <button id="openEntryModal" data-type="collection" class="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-green-700 transition-colors">
+            <i class="fas fa-hand-holding-dollar"></i> Collection
+        </button>
+        <button id="openInvestModal" data-type="investment" class="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors">
+            <i class="fas fa-chart-pie"></i> Investment
+        </button>
+        <button id="openInvestWithdrawModal" data-type="invest_withdraw" class="inline-flex items-center gap-2 bg-purple-600 text-white px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-purple-700 transition-colors">
+            <i class="fas fa-arrow-left"></i> Invest Withdraw
+        </button>
+        <button id="openPaymentModal" data-type="payment" class="inline-flex items-center gap-2 bg-orange-500 text-white px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-orange-600 transition-colors">
+            <i class="fas fa-money-bill-transfer"></i> Payment
+        </button>
+    </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+    <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-green-600">
+        <p class="text-sm text-gray-500">Total Collection</p>
+        <p class="text-2xl font-bold text-gray-800" id="ledgerCollection">৳0</p>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-blue-600">
+        <p class="text-sm text-gray-500">Invest Balance</p>
+        <p class="text-2xl font-bold text-gray-800" id="ledgerInvest">৳0</p>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-purple-600">
+        <p class="text-sm text-gray-500">Total Invested</p>
+        <p class="text-2xl font-bold text-gray-800" id="ledgerInvestIn">৳0</p>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-orange-500">
+        <p class="text-sm text-gray-500">Total Payment</p>
+        <p class="text-2xl font-bold text-gray-800" id="ledgerPayment">৳0</p>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-slate-700">
+        <p class="text-sm text-gray-500">Net Balance</p>
+        <p class="text-2xl font-bold text-gray-800" id="ledgerNet">৳0</p>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="bg-white rounded-xl shadow-sm p-4 mb-6">
+    <div class="flex flex-wrap items-end gap-4">
+        <div>
+            <label class="block text-sm text-gray-500 mb-1">Member</label>
+            <select id="filterMember" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
+                <option value="all">All Members</option>
+            </select>
+        </div>
+        <div>
+            <label class="block text-sm text-gray-500 mb-1">Entry Type</label>
+            <select id="filterType" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
+                <option value="all">All Types</option>
+                <option value="collection">Collection</option>
+                <option value="investment">Investment</option>
+                <option value="invest_withdraw">Invest Withdraw</option>
+                <option value="payment">Payment</option>
+                <option value="expense">Expense</option>
+            </select>
+        </div>
+        <div>
+            <label class="block text-sm text-gray-500 mb-1">From</label>
+            <input type="date" id="filterFrom" class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
+        </div>
+        <div>
+            <label class="block text-sm text-gray-500 mb-1">To</label>
+            <input type="date" id="filterTo" class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
+        </div>
+        <button id="clearFilters" class="px-4 py-2 rounded-lg border border-gray-300 text-sm text-gray-600 hover:bg-gray-50">Clear</button>
+        <div class="ml-auto text-right">
+            <label class="block text-sm text-gray-500 mb-1">Showing total</label>
+            <p id="ledgerFilterTotal" class="text-lg font-bold text-gray-800">৳0</p>
+        </div>
+    </div>
+</div>
+
+<!-- Ledger Table -->
+<div class="bg-white rounded-xl shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm data-table">
+            <thead>
+                <tr class="border-b">
+                    <th class="text-left py-4 px-4 font-semibold text-gray-600">Date</th>
+                    <th class="text-left py-4 px-4 font-semibold text-gray-600">Member</th>
+                    <th class="text-left py-4 px-4 font-semibold text-gray-600">Type</th>
+                    <th class="text-left py-4 px-4 font-semibold text-gray-600">Purpose</th>
+                    <th class="text-right py-4 px-4 font-semibold text-gray-600">Received (In)</th>
+                    <th class="text-right py-4 px-4 font-semibold text-gray-600">Paid Out</th>
+                    <th class="text-right py-4 px-4 font-semibold text-gray-600">Balance</th>
+                    <th class="text-center py-4 px-4 font-semibold text-gray-600">Action</th>
+                </tr>
+            </thead>
+            <tbody id="ledgerTableBody">
+                <tr><td colspan="8" class="py-10 text-center text-gray-400">Loading ledger...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Entry Modal -->
+<div id="entryModal" class="hidden fixed inset-0 z-50 bg-slate-950/50 p-4 flex items-center justify-center">
+    <div class="w-full max-w-lg bg-white rounded-2xl shadow-2xl">
+        <div class="px-6 py-4 border-b flex items-center justify-between">
+            <h3 id="entryModalTitle" class="text-lg font-bold text-gray-800">New Entry</h3>
+            <button id="closeEntryModal" class="w-8 h-8 rounded-lg text-gray-500 hover:bg-gray-100"><i class="fas fa-xmark"></i></button>
+        </div>
+        <form id="entryForm" class="p-6 space-y-4">
+            <input type="hidden" name="action" value="save">
+            <input type="hidden" name="entry_type" id="entryType" value="collection">
+            <div>
+                <label class="block text-sm font-semibold text-gray-600 mb-1">Member</label>
+                <select name="member_id" id="entryMember" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Loading members...</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-semibold text-gray-600 mb-1">Amount (৳)</label>
+                <input type="number" name="amount" id="entryAmount" min="0" step="0.01" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="0">
+            </div>
+            <div>
+                <label class="block text-sm font-semibold text-gray-600 mb-1">Date</label>
+                <input type="date" name="entry_date" id="entryDate" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+                <label class="block text-sm font-semibold text-gray-600 mb-1">Purpose / Note</label>
+                <input type="text" name="purpose" id="entryPurpose" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Purpose or note">
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-600 mb-1">Method</label>
+                    <select name="method" id="entryMethod" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm">
+                        <option>Cash</option>
+                        <option>Bank</option>
+                        <option>bKash</option>
+                        <option>Nagad</option>
+                        <option>Rocket</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-600 mb-1">Ref. no.</label>
+                    <input type="text" name="reference_no" id="entryRef" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm" placeholder="TrxID / receipt">
+                </div>
+            </div>
+            <button type="submit" id="entrySubmitBtn" class="w-full py-3 rounded-lg bg-blue-600 text-white text-sm font-bold hover:bg-blue-700 transition-colors"><i class="fas fa-check mr-2"></i>Save Entry</button>
+        </form>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    const money = value => '৳' + Number(value || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 });
+    const ledgerApi = 'api/ledger.php';
+    const config = {
+        collection: { title: 'Record Collection', color: 'bg-green-600', label: 'Member payment (in)' },
+        investment: { title: 'New Investment', color: 'bg-blue-600', label: 'Member invests capital (in)' },
+        invest_withdraw: { title: 'Invest Withdraw', color: 'bg-purple-600', label: 'Return capital to member (out)' },
+        payment: { title: 'New Payment', color: 'bg-orange-500', label: 'Somiti pays out to member (out)' },
+        expense: { title: 'New Expense', color: 'bg-red-500', label: 'General expense (out)' }
+    };
+
+    $('#entryDate').val(new Date().toISOString().split('T')[0]);
+
+    function loadMembers() {
+        $.getJSON(ledgerApi + '?action=members', function(response) {
+            if (!response.ok) return;
+            const options = response.data.map(m => `<option value="${m.id}">${m.name}</option>`).join('');
+            $('#entryMember').html('<option value="">-- Select Member --</option>' + options);
+            $('#filterMember').append(options);
+        });
+    }
+
+    function loadSummary() {
+        $.getJSON(ledgerApi + '?action=summary', function(response) {
+            if (!response.ok) return;
+            const d = response.data;
+            $('#ledgerCollection').text(money(d.total_collection));
+            $('#ledgerInvest').text(money(d.invest_balance));
+            $('#ledgerInvestIn').text(money(d.total_in));
+            $('#ledgerPayment').text(money(d.total_out));
+            $('#ledgerNet').text(money(d.net_balance));
+        });
+    }
+
+    function currentFilter() {
+        const params = [];
+        const member = $('#filterMember').val();
+        const type = $('#filterType').val();
+        const from = $('#filterFrom').val();
+        const to = $('#filterTo').val();
+        if (member !== 'all') params.push('member_id=' + member);
+        if (type !== 'all') params.push('type=' + type);
+        if (from) params.push('from=' + from);
+        if (to) params.push('to=' + to);
+        return params.join('&');
+    }
+
+    function loadLedger() {
+        const extra = currentFilter();
+        $.getJSON(ledgerApi + '?action=list' + (extra ? '&' + extra : ''), function(response) {
+            if (!response.ok) return;
+            let runningBalance = 0;
+            let filterTotal = 0;
+            const rows = response.data.map(function(r) {
+                runningBalance += r.debit - r.credit;
+                const inCell = r.debit > 0 ? money(r.debit) : '-';
+                const outCell = r.credit > 0 ? money(r.credit) : '-';
+                const balClass = runningBalance >= 0 ? 'text-gray-800' : 'text-red-600';
+                const badgeClass = {
+                    collection: 'bg-green-100 text-green-700',
+                    investment: 'bg-blue-100 text-blue-700',
+                    invest_withdraw: 'bg-purple-100 text-purple-700',
+                    payment: 'bg-orange-100 text-orange-700',
+                    expense: 'bg-red-100 text-red-700'
+                }[r.entry_type] || 'bg-gray-100 text-gray-600';
+                return `<tr class="border-b hover:bg-gray-50">
+                    <td class="py-3 px-4 text-gray-500">${r.entry_date}</td>
+                    <td class="py-3 px-4 font-medium">${r.member_name}</td>
+                    <td class="py-3 px-4"><span class="px-2.5 py-1 rounded-full text-xs font-semibold ${badgeClass}">${r.type_label}</span></td>
+                    <td class="py-3 px-4 text-gray-500">${r.purpose || '-'}</td>
+                    <td class="py-3 px-4 text-right ${r.debit > 0 ? 'text-green-600 font-semibold' : ''}">${inCell}</td>
+                    <td class="py-3 px-4 text-right ${r.credit > 0 ? 'text-red-500 font-semibold' : ''}">${outCell}</td>
+                    <td class="py-3 px-4 text-right font-bold ${balClass}">${money(runningBalance)}</td>
+                    <td class="py-3 px-4 text-center">
+                        <button type="button" class="delete-entry text-red-500 hover:text-red-700" data-id="${r.id}" title="Delete"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>`;
+            });
+            $('#ledgerTableBody').html(rows.join('') || '<tr><td colspan="8" class="py-10 text-center text-gray-400">No ledger entries match your filters.</td></tr>');
+            $('#ledgerFilterTotal').text(money(runningBalance));
+        });
+    }
+
+    $('#filterMember, #filterType, #filterFrom, #filterTo').on('change', loadLedger);
+    $('#clearFilters').click(function() {
+        $('#filterMember').val('all');
+        $('#filterType').val('all');
+        $('#filterFrom').val('');
+        $('#filterTo').val('');
+        loadLedger();
+    });
+
+    function openModal(type) {
+        const cfg = config[type] || config.collection;
+        $('#entryType').val(type);
+        $('#entryModalTitle').text(cfg.title);
+        $('#entrySubmitBtn').removeClass('bg-blue-600 hover:bg-blue-700 bg-green-600 hover:bg-green-700 bg-purple-600 hover:bg-purple-700 bg-orange-500 hover:bg-orange-600 bg-red-500 hover:bg-red-600').addClass(cfg.color + ' hover:opacity-90');
+        $('#entryPurpose').attr('placeholder', cfg.label);
+        $('#entryAmount').val('');
+        $('#entryPurpose').val('');
+        $('#entryRef').val('');
+        $('#entryMember').val('');
+        $('#entryModal').removeClass('hidden');
+    }
+
+    function closeModal() {
+        $('#entryModal').addClass('hidden');
+    }
+
+    $('#openEntryModal').click(function() { openModal('collection'); });
+    $('#openInvestModal').click(function() { openModal('investment'); });
+    $('#openInvestWithdrawModal').click(function() { openModal('invest_withdraw'); });
+    $('#openPaymentModal').click(function() { openModal('payment'); });
+    $('#closeEntryModal').click(closeModal);
+    $('#entryModal').on('click', function(e) { if (e.target === this) closeModal(); });
+
+    $(document).on('click', '.delete-entry', function() {
+        const id = $(this).data('id');
+        if (!confirm('Delete this ledger entry?')) return;
+        $.post(ledgerApi, { action: 'delete', id: id }, function(response) {
+            if (!response.ok) { alert(response.message || 'Delete failed.'); return; }
+            loadLedger();
+            loadSummary();
+        }, 'json');
+    });
+
+    $('#entryForm').on('submit', function(e) {
+        e.preventDefault();
+        const data = {};
+        $(this).serializeArray().forEach(function(f) { data[f.name] = f.value; });
+        const typeLabel = (config[data.entry_type] || {}).title || 'Entry';
+        $.post(ledgerApi, data, function(response) {
+            if (!response.ok) { alert(response.message || 'Save failed.'); return; }
+            closeModal();
+            loadLedger();
+            loadSummary();
+            alert(response.message || typeLabel + ' saved.');
+        }, 'json');
+    });
+
+    loadMembers();
+    loadSummary();
+    loadLedger();
+});
+</script>
